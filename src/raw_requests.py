@@ -50,7 +50,7 @@ def login(username: str, password_hashed: str):
 		'Content-Type': 'application/x-www-form-urlencoded',
 	}
 	body = {
-		"username": username,
+		"username": username.encode('GB2312'),
 		"password": password_hashed,
 		"cookietime": "2592000",  # 30 days
 		"quickforward": "yes",
