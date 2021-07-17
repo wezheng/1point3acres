@@ -32,7 +32,7 @@ def get_verify_code(id_hash) -> str:
 	verify_code = ""
 	for i in range(20):
 		print(f"try to get verify code {i + 1}th time...")
-		time.sleep(1)
+		time.sleep(2)
 		code = get_verify_code_(id_hash)
 		if len(code) != 4:
 			print("verify code len error, retry")
@@ -44,9 +44,21 @@ def get_verify_code(id_hash) -> str:
 	return verify_code
 
 
+# 如果 login 失败, 后面的操作没必要再做，直接 exit
+def daily_login(username: str, password_hashed: str):
+	print("do login...")
+	form_hash, login_hash = get_login_info_()
+	time.sleep(2)
+	if form_hash == "" or login_hash == "":
+		print("wrong login info")
+		exit(-1)
+	return login(username, password_hashed, form_hash, login_hash)
+
+
 def daily_checkin() -> bool:
 	print("do daily checkin...")
 	form_hash, sec_hash = get_checkin_info_()
+	time.sleep(2)
 	if form_hash == "":
 		return False
 	code = get_verify_code(sec_hash)
@@ -58,6 +70,7 @@ def daily_checkin() -> bool:
 def daily_question() -> bool:
 	print("do daily question...")
 	answer, form_hash, sec_hash, = get_daily_task_answer()
+	time.sleep(2)
 	if form_hash == "" or answer == "":
 		return False
 	code = get_verify_code(sec_hash)
@@ -67,10 +80,8 @@ def daily_question() -> bool:
 
 
 def do_all(username: str, password: str):
-	#print(f"for user: {username[:3]}...{username[-2:]}")
-	print(username)
-	#print(password)
-	login(username, password)
+	print(f"for user: {username[:3]}...{username[-2:]}")
+	daily_login(username, password)
 	daily_checkin()
 	daily_question()
 	return
